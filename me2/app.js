@@ -161,6 +161,7 @@ function tweetToTwitter(statusText, oath_token, oauth_token_secret, res) {
 
     const oauthData = oauth.authorize(request_data, token);
     console.log(oauthData)
+
     const oauthHeader = `OAuth ` +
         `oauth_consumer_key="${encodeURIComponent(oauthData.oauth_consumer_key)}", ` +
         `oauth_token="${encodeURIComponent(oauthData.oauth_token)}", ` +
@@ -169,6 +170,7 @@ function tweetToTwitter(statusText, oath_token, oauth_token_secret, res) {
         `oauth_nonce="${encodeURIComponent(oauthData.oauth_nonce)}", ` +
         `oauth_version="${encodeURIComponent(oauthData.oauth_version)}", ` +
         `oauth_signature="${encodeURIComponent(oauthData.oauth_signature)}"`;
+
 
 
     // מקודדים את הטקסט לצורך שימוש בגוף הבקשה (כמו HTML form)
