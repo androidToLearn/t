@@ -47,7 +47,7 @@ app.post('/send-text', (req, res) => {
         url: 'https://api.twitter.com/oauth/request_token',
         method: 'POST',
         data: {
-            oauth_callback: 'https://api-twitter-7.onrender.com/twitter/callback'  // כי האפליקציה Desktop
+            oauth_callback: 'https://t-2-fs03.onrender.com/twitter/callback'  // כי האפליקציה Desktop
         }
     };
 
