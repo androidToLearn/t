@@ -158,49 +158,33 @@ function tweetToTwitter(statusText, oath_token, oauth_token_secret, res) {
         key: oath_token,
         secret: oauth_token_secret,
     };
+    oauth = OAuth({
+        consumer: { key: consumerKey, secret: consumerSecret },
+        signature_method: 'HMAC-SHA1',
+        hash_function(base_string, key) {
+            return crypto.createHmac('sha1', key).update(base_string).digest('base64');
+        },
+    });
+    const headers = oauth.toHeader(oauth.authorize(request_data, token));
+    headers["Content-Type"] = "application/x-www-form-urlencoded";
 
-    const oauthData = oauth.authorize(request_data, token);
-    console.log(oauthData)
-
-    const oauthHeader = `OAuth ` +
-        `oauth_consumer_key="${encodeURIComponent(oauthData.oauth_consumer_key)}", ` +
-        `oauth_token="${encodeURIComponent(oauthData.oauth_token)}", ` +
-        `oauth_signature_method="${encodeURIComponent(oauthData.oauth_signature_method)}", ` +
-        `oauth_timestamp="${encodeURIComponent(oauthData.oauth_timestamp)}", ` +
-        `oauth_nonce="${encodeURIComponent(oauthData.oauth_nonce)}", ` +
-        `oauth_version="${encodeURIComponent(oauthData.oauth_version)}", ` +
-        `oauth_signature="${encodeURIComponent(oauthData.oauth_signature)}"`;
-
-
-
-    // מקודדים את הטקסט לצורך שימוש בגוף הבקשה (כמו HTML form)
+    // גוף הבקשה
     const body = querystring.stringify({ status: statusText });
 
-    fetch("https://api.twitter.com/1.1/statuses/update.json", {
-        method: "POST",
-        headers: {
-            "Authorization": oauthHeader,
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Accept": "",
-            "Connection": "close"
-        },
+    fetch(request_data.url, {
+        method: 'POST',
+        headers: headers,
         body: body
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Tweet failed with status " + response.status);
-            }
-            return response.json();
+        .then(res => {
+            if (!res.ok) throw new Error(`Tweet failed: ${res.status}`);
+            return res.json();
         })
         .then(data => {
-            console.log("Tweet sent:", data);
-            res.json({ 'text': 'ok' })
-
+            console.log("✅ ציוץ נשלח בהצלחה:", data);
         })
-        .catch(error => {
-            console.error("Error tweeting:", error);
-
-
+        .catch(err => {
+            console.error("❌ שגיאה בשליחת ציוץ:", err);
         });
 
 
